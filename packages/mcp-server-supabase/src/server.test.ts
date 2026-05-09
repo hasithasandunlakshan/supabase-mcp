@@ -2694,11 +2694,7 @@ describe('tools', () => {
     );
     expect(listBranchesResultAfterDelete.branches).toHaveLength(1);
 
-    const mainBranch = listBranchesResultAfterDelete.branches.at(-1);
-
-    if (!mainBranch) {
-      throw new Error('Expected default branch to exist');
-    }
+    const mainBranch = listBranchesResultAfterDelete.branches[-1];
 
     const deleteBranchPromise = callTool({
       name: 'delete_branch',
