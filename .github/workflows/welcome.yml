@@ -9,7 +9,7 @@ on:
 jobs:
   welcome:
     name: Post welcome message
-    if: ${{ !contains(fromJson('["dependabot[bot]", "github-actions[bot]", "renovate[bot]", "greenkeeper[bot]"]'), github.actor) }}
+    if: ${{ !contains(fromJson('["dependabot[bot]", "github-actions[bot]"]'), github.actor) }} # zizmor: ignore[obfuscation]
     runs-on: ubuntu-latest
     permissions:
       issues: write
