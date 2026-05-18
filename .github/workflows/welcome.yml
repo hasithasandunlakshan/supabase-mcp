@@ -1,23 +1,19 @@
 name: Welcome first time contributors
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened]
   issues:
     types: [opened]
 
-permissions:
-  issues: read
-  pull-requests: read
-
 jobs:
   welcome:
     name: Post welcome message
-    if: ${{ !contains(fromJson('["dependabot[bot]", "github-actions[bot]"]'), github.actor) }} # zizmor: ignore[obfuscation]
+    if: ${{ !contains(fromJson('["dependabot[bot]", "github-actions[bot]", "renovate[bot]", "greenkeeper[bot]"]'), github.actor) }}
     runs-on: ubuntu-latest
     permissions:
-      issues: write             # Required to post issue comments
-      pull-requests: write      # Required to post pull request reviews
+      issues: write
+      pull-requests: write
     env:
       ISSUE_WELCOME_MSG: |
         Welcome to the Supabase Model Context Protocol (MCP) server repository! 🎉 Thank you for reporting your first issue.
@@ -38,7 +34,6 @@ jobs:
           let isFirstContribution = false;
           
           if (isIssue) {
-            // Check if this is the user's first issue using real-time GraphQL (issues has real-time filterBy)
             const query = `query($owner:String!, $name:String!, $contributor:String!) {
               repository(owner:$owner, name:$name){
                 issues(first: 2, filterBy: {createdBy:$contributor}){
@@ -54,7 +49,6 @@ jobs:
             const { repository: { issues: { totalCount } } } = await github.graphql(query, variables);
             isFirstContribution = totalCount === 1;
           } else {
-            // Fix search indexing delay by using direct database REST call for PR count
             const pullsList = await github.rest.pulls.list({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -80,11 +74,10 @@ jobs:
               body: message
             });
           } else {
-            await github.rest.pulls.createReview({
+            await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              pull_number: context.payload.pull_request.number,
-              body: message,
-              event: 'COMMENT'
+              issue_number: context.payload.pull_request.number,
+              body: message
             });
           }
