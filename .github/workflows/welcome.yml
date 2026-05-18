@@ -36,7 +36,7 @@ jobs:
           if (isIssue) {
             const query = `query($owner:String!, $name:String!, $contributor:String!) {
               repository(owner:$owner, name:$name){
-                issues(first: 2, filterBy: {createdBy:$contributor}){
+                issues(first: 2, filterBy: {createdBy:$contributor, states:[OPEN, CLOSED]}) {
                   totalCount
                 }
               }
